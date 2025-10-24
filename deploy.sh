@@ -34,8 +34,8 @@ APP_DEBUG=false
 APP_URL=https://whatsapp-laravel-app-production.up.railway.app
 APP_KEY=
 
-DB_CONNECTION=sqlite
-DB_DATABASE=database/database.sqlite
+DB_CONNECTION=${DB_CONNECTION:-sqlite}
+DB_DATABASE=${DB_DATABASE:-database/database.sqlite}
 
 SESSION_DRIVER=file
 CACHE_DRIVER=file
@@ -58,10 +58,19 @@ fi
 echo "Generating application key..."
 php artisan key:generate --force
 
-# Create database file if it doesn't exist
-if [ ! -f database/database.sqlite ]; then
-    echo "Creating SQLite database..."
-    touch database/database.sqlite
+# Handle database setup
+if [ "$DB_CONNECTION" = "pgsql" ]; then
+    echo "Using PostgreSQL database..."
+    # Wait for PostgreSQL to be ready
+    echo "Waiting for PostgreSQL connection..."
+    sleep 10
+else
+    echo "Using SQLite database..."
+    # Create database file if it doesn't exist
+    if [ ! -f database/database.sqlite ]; then
+        echo "Creating SQLite database..."
+        touch database/database.sqlite
+    fi
 fi
 
 # Clear caches
