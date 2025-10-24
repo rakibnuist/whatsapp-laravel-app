@@ -478,30 +478,46 @@ if (! function_exists('getAppSettings')) {
             return Arr::get(getAppSettings($itemName), $itemKeys);
         }
 
+        // Check if database connection is available
+        try {
+            \DB::connection()->getPdo();
+        } catch (\Exception $e) {
+            // Database not available, return empty array or default values
+            return [];
+        }
+
         $appSettings = [];
         $exceptItems = config('__settings.autoload_exceptions', []);
         if (!empty($exceptItems) and $itemName and in_array($itemName, $exceptItems)) {
-            $configurationSetting = \App\Yantrana\Components\Configuration\Models\ConfigurationModel::where('name', $itemName)->select('name', 'value', 'data_type')->first();
-            if (!__isEmpty($configurationSetting)) {
-                $appSettings[$configurationSetting->name] = $configurationSetting->value;
+            try {
+                $configurationSetting = \App\Yantrana\Components\Configuration\Models\ConfigurationModel::where('name', $itemName)->select('name', 'value', 'data_type')->first();
+                if (!__isEmpty($configurationSetting)) {
+                    $appSettings[$configurationSetting->name] = $configurationSetting->value;
+                }
+                $storeConfiguration = $appSettings;
+            } catch (\Exception $e) {
+                $storeConfiguration = [];
             }
-            $storeConfiguration = $appSettings;
         } else {
-            $storeConfiguration = viaFlashCache('app_setting_all', function () use (&$appSettings, &$exceptItems) {
-                $configurationSettings = \App\Yantrana\Components\Configuration\Models\ConfigurationModel::select('name', 'value', 'data_type');
-                if (!empty($exceptItems)) {
-                    $configurationSettings->whereNotIn('name', $exceptItems);
-                }
-                $configurationSettings = $configurationSettings->get();
-                // check if configuration settings exists in db
-                if (! __isEmpty($configurationSettings)) {
-                    foreach ($configurationSettings as $configurationSetting) {
-                        $appSettings[$configurationSetting->name] = $configurationSetting->value;
+            try {
+                $storeConfiguration = viaFlashCache('app_setting_all', function () use (&$appSettings, &$exceptItems) {
+                    $configurationSettings = \App\Yantrana\Components\Configuration\Models\ConfigurationModel::select('name', 'value', 'data_type');
+                    if (!empty($exceptItems)) {
+                        $configurationSettings->whereNotIn('name', $exceptItems);
                     }
-                }
-                unset($configurationSettings);
-                return $appSettings;
-            });
+                    $configurationSettings = $configurationSettings->get();
+                    // check if configuration settings exists in db
+                    if (! __isEmpty($configurationSettings)) {
+                        foreach ($configurationSettings as $configurationSetting) {
+                            $appSettings[$configurationSetting->name] = $configurationSetting->value;
+                        }
+                    }
+                    unset($configurationSettings);
+                    return $appSettings;
+                });
+            } catch (\Exception $e) {
+                $storeConfiguration = [];
+            }
         }
         // Fetch default setting
         // Vinod- 06 JAN 2024 - this is weird but there was issues for addons app items so we have to check if configuration is cached or not

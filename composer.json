@@ -80,6 +80,12 @@
             "@php artisan key:generate --ansi",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
+        ],
+        "deploy": [
+            "@php -r \"file_exists('.env') || file_put_contents('.env', 'APP_NAME=Laravel\\nAPP_ENV=production\\nAPP_KEY=\\nAPP_DEBUG=false\\nAPP_URL=http://localhost\\nDB_CONNECTION=sqlite\\nDB_DATABASE=database/database.sqlite\\n');\"",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan key:generate --ansi --force",
+            "@php artisan package:discover --ansi"
         ]
     },
     "extra": {
