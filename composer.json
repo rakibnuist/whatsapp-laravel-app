@@ -94,6 +94,14 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "platform": {
+            "php": "8.2.0",
+            "ext-bcmath": "*",
+            "ext-zip": "*",
+            "ext-redis": "*",
+            "ext-sodium": "*",
+            "ext-opcache": "*"
         }
     },
     "minimum-stability": "stable",
