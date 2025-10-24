@@ -8,6 +8,16 @@ use Illuminate\Support\Facades\Redirect;
 Route::get('/health', function () {
     return response()->json(['status' => 'ok', 'timestamp' => now()]);
 });
+
+// Simple status route
+Route::get('/status', function () {
+    return response()->json([
+        'status' => 'ok',
+        'app' => 'Laravel WhatsApp App',
+        'version' => app()->version(),
+        'timestamp' => now()
+    ]);
+});
 use App\Yantrana\Components\Home\Controllers\HomeController;
 use App\Yantrana\Components\Page\Controllers\PageController;
 use App\Yantrana\Components\User\Controllers\UserController;

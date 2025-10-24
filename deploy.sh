@@ -11,9 +11,58 @@ fi
 
 echo "Using port: $PORT"
 
+# Set basic environment variables if not set
+if [ -z "$APP_ENV" ]; then
+    export APP_ENV=production
+fi
+
+if [ -z "$APP_DEBUG" ]; then
+    export APP_DEBUG=false
+fi
+
+if [ -z "$APP_URL" ]; then
+    export APP_URL=https://whatsapp-laravel-app-production.up.railway.app
+fi
+
+# Create .env file if it doesn't exist
+if [ ! -f .env ]; then
+    echo "Creating .env file..."
+    cat > .env << EOF
+APP_NAME=WhatsJet
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://whatsapp-laravel-app-production.up.railway.app
+APP_KEY=
+
+DB_CONNECTION=sqlite
+DB_DATABASE=database/database.sqlite
+
+SESSION_DRIVER=file
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
+
+FILESYSTEM_DISK=local
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="noreply@whatsapp-laravel-app-production.up.railway.app"
+MAIL_FROM_NAME="WhatsJet"
+EOF
+fi
+
 # Generate application key
 echo "Generating application key..."
 php artisan key:generate --force
+
+# Create database file if it doesn't exist
+if [ ! -f database/database.sqlite ]; then
+    echo "Creating SQLite database..."
+    touch database/database.sqlite
+fi
 
 # Clear caches
 echo "Clearing caches..."
@@ -34,19 +83,10 @@ echo "Setting permissions..."
 chmod -R 775 storage
 chmod -R 775 bootstrap/cache
 
-# Test if we can start the server
-echo "Testing Laravel server startup..."
-php artisan serve --host=0.0.0.0 --port=$PORT &
-SERVER_PID=$!
+# Run migrations
+echo "Running database migrations..."
+php artisan migrate --force || echo "Migration failed, continuing..."
 
-# Wait a moment for server to start
-sleep 5
-
-# Check if server is running
-if ps -p $SERVER_PID > /dev/null; then
-    echo "Laravel server started successfully on port $PORT"
-    wait $SERVER_PID
-else
-    echo "Failed to start Laravel server"
-    exit 1
-fi
+# Start the application
+echo "Starting Laravel server on port $PORT..."
+exec php artisan serve --host=0.0.0.0 --port=$PORT
