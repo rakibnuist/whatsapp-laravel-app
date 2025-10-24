@@ -4,9 +4,9 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "./start.sh",
-    "healthcheckPath": "/health",
-    "healthcheckTimeout": 300,
+    "startCommand": "./deploy.sh",
+    "healthcheckPath": "/health.php",
+    "healthcheckTimeout": 60,
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
