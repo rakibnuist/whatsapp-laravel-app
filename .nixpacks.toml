@@ -6,5 +6,11 @@ cmds = [
   "composer install --optimize-autoloader --no-dev --no-interaction --ignore-platform-reqs"
 ]
 
+[phases.build]
+cmds = [
+  "php artisan config:cache",
+  "php artisan route:cache"
+]
+
 [start]
 cmd = "php artisan serve --host=0.0.0.0 --port=$PORT"
