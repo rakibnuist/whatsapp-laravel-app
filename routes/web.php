@@ -18,6 +18,15 @@ Route::get('/status', function () {
         'timestamp' => now()
     ]);
 });
+
+// Fallback route for debugging
+Route::fallback(function () {
+    return response()->json([
+        'status' => 'error',
+        'message' => 'Route not found',
+        'timestamp' => now()
+    ], 404);
+});
 use App\Yantrana\Components\Home\Controllers\HomeController;
 use App\Yantrana\Components\Page\Controllers\PageController;
 use App\Yantrana\Components\User\Controllers\UserController;

@@ -87,6 +87,10 @@ chmod -R 775 bootstrap/cache
 echo "Running database migrations..."
 php artisan migrate --force || echo "Migration failed, continuing..."
 
+# Test Laravel before starting
+echo "Testing Laravel application..."
+php artisan route:list --compact || echo "Route list failed, continuing..."
+
 # Start the application
 echo "Starting Laravel server on port $PORT..."
 exec php artisan serve --host=0.0.0.0 --port=$PORT
