@@ -3,6 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
+
+// Healthcheck route for Railway
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok', 'timestamp' => now()]);
+});
 use App\Yantrana\Components\Home\Controllers\HomeController;
 use App\Yantrana\Components\Page\Controllers\PageController;
 use App\Yantrana\Components\User\Controllers\UserController;
