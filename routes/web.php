@@ -59,13 +59,11 @@ use App\Yantrana\Components\WhatsAppService\Controllers\WhatsAppTemplateControll
 |
 */
 
-// Simple working homepage
-Route::get('/', function () {
-    return view('welcome', [
-        'title' => 'WhatsJet - WhatsApp Laravel App',
-        'message' => 'Your Laravel WhatsApp application is successfully deployed on Railway!'
-    ]);
-})->name('landing_page');
+// WhatsApp application homepage
+Route::get('/', [
+    HomeController::class,
+    'homePageView',
+])->name('landing_page');
 // user console
 Route::get('/console', function () {
     return hasCentralAccess() ? Redirect::route('central.console') : Redirect::route('vendor.console');

@@ -482,8 +482,23 @@ if (! function_exists('getAppSettings')) {
         try {
             \DB::connection()->getPdo();
         } catch (\Exception $e) {
-            // Database not available, return empty array or default values
-            return [];
+            // Database not available, return default values
+            $defaultSettings = [
+                'name' => 'WhatsJet',
+                'description' => 'WhatsApp Business API Application',
+                'logo_image_url' => asset('imgs/logo.svg'),
+                'favicon_image_url' => asset('favicon.ico'),
+                'current_home_page_view' => 'outer-home',
+                'other_home_page_url' => null,
+                'timezone' => 'UTC',
+                'logo_name' => 'logo.svg',
+                'small_logo_name' => 'logo-short.svg',
+                'favicon_name' => 'favicon.ico',
+                'dark_theme_logo_name' => 'logo.svg',
+                'dark_theme_small_logo_name' => 'logo-short.svg'
+            ];
+            
+            return $defaultSettings[$itemName] ?? null;
         }
 
         $appSettings = [];
